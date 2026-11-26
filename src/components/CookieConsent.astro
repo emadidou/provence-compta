@@ -1,0 +1,120 @@
+---
+// Bandeau de consentement + Google Analytics 4.
+// GA n'est chargé qu'après un clic sur « Accepter » (aucun cookie avant).
+// Le choix est conservé 13 mois (recommandation CNIL), puis redemandé.
+import { site } from '@data/site';
+
+const gaId: string = site.gaMeasurementId;
+---
+{gaId && (
+  <div
+    id="cookie-banner"
+    role="dialog"
+    aria-live="polite"
+    aria-label="Mesure d'audience"
+    hidden
+    class="fixed inset-x-3 bottom-3 z-[90] mx-auto max-w-3xl rounded-xl border border-line bg-white p-5 shadow-card-hover sm:inset-x-6 sm:bottom-6 sm:p-6"
+  >
+    <p class="text-sm leading-6 text-slate-700">
+      Nous utilisons Google Analytics pour compter les visites et savoir quelles pages vous sont utiles.
+      Aucune donnée personnelle (nom, e-mail, message) n'est collectée.
+      <a href="/mentions-legales/#cookies" class="font-medium text-accent underline underline-offset-2">En savoir plus</a>
+    </p>
+    <div class="mt-4 flex flex-wrap gap-3">
+      <button type="button" data-consent="denied" class="btn-secondary flex-1 sm:flex-none">Refuser</button>
+      <button type="button" data-consent="granted" class="btn-primary flex-1 sm:flex-none">Accepter</button>
+    </div>
+  </div>
+)}
+
+{gaId && (
+  <script is:inline define:vars={{ gaId }}>
+    (function () {
+      var KEY = 'pc-consent';
+      var MAX_AGE = 1000 * 60 * 60 * 24 * 395; // ~13 mois
+      var banner = document.getElementById('cookie-banner');
+
+      function read() {
+        try {
+          var v = JSON.parse(localStorage.getItem(KEY) || 'null');
+          if (v && Date.now() - v.at < MAX_AGE) return v.choice;
+        } catch (e) {}
+        return null;
+      }
+      function save(choice) {
+        try { localStorage.setItem(KEY, JSON.stringify({ choice: choice, at: Date.now() })); } catch (e) {}
+      }
+
+      var loaded = false;
+      function loadGa() {
+        if (loaded) return;
+        loaded = true;
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = function () { window.dataLayer.push(arguments); };
+        window.gtag('js', new Date());
+        window.gtag('config', gaId, {
+          allow_google_signals: false,
+          allow_ad_personalization_signals: false,
+        });
+        var s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(gaId);
+        document.head.appendChild(s);
+      }
+
+      function track(name, params) {
+        if (loaded && window.gtag) window.gtag('event', name, params);
+      }
+      window.pcTrack = track;
+
+      // Cabinet concerné : page cabinet en cours, sinon lien le plus proche marqué data-cabinet.
+      function cabinetFor(el) {
+        var holder = el.closest('[data-cabinet]');
+        if (holder) return holder.getAttribute('data-cabinet');
+        var m = location.pathname.match(/^\/cabinets\/([^/]+)/);
+        return m ? m[1] : 'general';
+      }
+
+      document.addEventListener('click', function (e) {
+        var a = e.target.closest && e.target.closest('a[href]');
+        if (!a) return;
+        var href = a.getAttribute('href') || '';
+        if (href.indexOf('tel:') === 0) {
+          track('phone_click', { cabinet: cabinetFor(a), page: location.pathname });
+        } else if (/google\.[a-z.]+\/maps/.test(href)) {
+          track('directions_click', { cabinet: cabinetFor(a), page: location.pathname });
+        }
+      });
+
+      // Envoyé par ContactForm après un envoi réussi.
+      document.addEventListener('pc:lead', function () {
+        track('generate_lead', { form: 'contact', page: location.pathname });
+      });
+
+      function choose(choice) {
+        save(choice);
+        if (banner) banner.hidden = true;
+        if (choice === 'granted') loadGa();
+      }
+
+      if (banner) {
+        banner.addEventListener('click', function (e) {
+          var btn = e.target.closest('[data-consent]');
+          if (btn) choose(btn.getAttribute('data-consent'));
+        });
+      }
+
+      // Lien « Gérer les cookies » du pied de page.
+      document.addEventListener('click', function (e) {
+        if (e.target.closest && e.target.closest('[data-cookie-settings]')) {
+          e.preventDefault();
+          if (banner) banner.hidden = false;
+        }
+      });
+
+      var current = read();
+      if (current === 'granted') loadGa();
+      else if (current === null && banner) banner.hidden = false;
+    })();
+  </script>
+)}

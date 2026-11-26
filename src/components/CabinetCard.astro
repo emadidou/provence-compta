@@ -1,0 +1,40 @@
+---
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import type { Cabinet } from '@data/cabinets';
+
+interface Props {
+  cabinet: Cabinet;
+}
+
+const { cabinet } = Astro.props;
+---
+<a
+  href={`/cabinets/${cabinet.slug}/`}
+  class="group relative block overflow-hidden rounded-xl border border-line shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-card-hover focus-visible:outline-none"
+>
+  <div class="relative h-60 overflow-hidden sm:h-64">
+    <Image
+      src={cabinet.heroImage}
+      alt={`Cabinet Provence Compta - ${cabinet.city}`}
+      width={640}
+      height={512}
+      loading="lazy"
+      decoding="async"
+      class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+    />
+    <div class="absolute inset-0 bg-gradient-to-t from-navy-900/85 via-navy-900/25 to-transparent"></div>
+  </div>
+  <div class="absolute inset-x-0 bottom-0 p-5">
+    <p class="text-xs font-semibold uppercase tracking-[0.16em] text-accent-300">Provence Compta {cabinet.dept}</p>
+    <h3 class="mt-1 text-xl font-semibold text-white">{cabinet.city}</h3>
+    <p class="mt-1 flex items-center gap-1.5 text-sm text-white/80">
+      <Icon name="map-pin" class="h-4 w-4 text-accent-300" />
+      {cabinet.region}
+    </p>
+    <span class="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-white">
+      Découvrir le cabinet
+      <Icon name="arrow-right" class="h-4 w-4 transition-transform group-hover:translate-x-1" />
+    </span>
+  </div>
+</a>

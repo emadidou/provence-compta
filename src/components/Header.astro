@@ -1,0 +1,159 @@
+---
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import { mainNav } from '@data/site';
+
+const path = Astro.url.pathname;
+const isActive = (href: string) =>
+  href === '/'
+    ? path === '/'
+    : path.startsWith(href.split('#')[0]) ||
+      (href.includes('/cabinets/') && path.startsWith('/cabinets/')) ||
+      (href.includes('/profils/') && path.startsWith('/profils/'));
+---
+<header class="sticky top-0 z-50 bg-white/95 shadow-[0_1px_0_rgba(11,37,69,0.08),0_18px_50px_-42px_rgba(11,37,69,0.45)] backdrop-blur-xl">
+  <nav class="bg-white/92" aria-label="Navigation principale">
+    <div class="mx-auto flex h-[82px] w-full max-w-content items-center justify-between gap-2 px-3 sm:px-3 lg:px-0">
+      <div class="w-[250px] shrink-0 overflow-hidden">
+        <Logo loading="eager" fetchpriority="high" />
+      </div>
+
+      <ul class="hidden min-w-0 flex-1 items-center justify-center gap-3 2xl:flex">
+        {mainNav.map((item) => (
+          <li class="group relative">
+            {'children' in item && item.children ? (
+              <>
+                <button
+                  type="button"
+                  aria-label={item.label}
+                  class={`relative flex h-11 shrink-0 items-center justify-center gap-1.5 rounded-lg px-2.5 py-2 text-center text-[13px] font-semibold leading-none transition-colors ${
+                    isActive(item.href) ? 'text-accent' : 'text-navy/80 hover:text-accent'
+                  }`}
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
+                  <span class="block whitespace-nowrap text-center">{item.label}</span>
+                  <Icon name="chevron-down" class="h-4 w-4 shrink-0 transition-transform group-hover:rotate-180" />
+                  {isActive(item.href) && <span class="absolute inset-x-4 -bottom-1 h-0.5 rounded-full bg-accent"></span>}
+                </button>
+
+                <div
+                  class="invisible absolute left-1/2 top-full z-50 -translate-x-1/2 pt-3 opacity-0 transition-all duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100"
+                >
+                  <ul class="w-72 rounded-2xl border border-line bg-white p-2.5 shadow-[0_24px_60px_-34px_rgba(11,37,69,0.42)]">
+                    {item.children.map((child) => (
+                      <li>
+                        <a
+                          href={child.href}
+                          aria-label={child.label}
+                          class={`block rounded-xl px-3.5 py-2.5 text-sm font-medium transition-colors hover:bg-mist ${
+                            path === child.href ? 'text-accent' : 'text-slate-600 hover:text-navy'
+                          }`}
+                        >
+                          {child.label}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </>
+            ) : (
+              <a
+                href={item.href}
+                aria-label={item.label}
+                class={`relative flex h-11 shrink-0 items-center justify-center rounded-lg px-2.5 py-2 text-center text-[13px] font-semibold leading-none transition-colors ${
+                  isActive(item.href) ? 'text-accent' : 'text-navy/80 hover:text-accent'
+                }`}
+                aria-current={isActive(item.href) ? 'page' : undefined}
+              >
+                <span class="block whitespace-nowrap text-center">{item.label}</span>
+                {isActive(item.href) && <span class="absolute inset-x-4 -bottom-1 h-0.5 rounded-full bg-accent"></span>}
+              </a>
+            )}
+          </li>
+        ))}
+      </ul>
+
+      <div class="hidden w-[190px] shrink-0 justify-end 2xl:flex">
+        <a
+          href="/contact/"
+          aria-label="Prendre rendez-vous"
+          class="inline-flex min-h-[48px] items-center justify-center whitespace-nowrap rounded-lg bg-accent px-4 py-3 text-[13px] font-bold leading-none text-white shadow-[0_18px_42px_-28px_rgba(0,152,168,0.9)] transition-colors hover:bg-accent-600"
+        >
+          Prendre rendez-vous
+        </a>
+      </div>
+
+      <button
+        type="button"
+        id="menu-toggle"
+        class="inline-flex h-12 w-12 items-center justify-center rounded-lg border border-line text-navy 2xl:hidden"
+        aria-label="Ouvrir le menu"
+        aria-controls="mobile-menu"
+        aria-expanded="false"
+      >
+        <svg class="menu-open h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+        <svg class="menu-close hidden h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+      </button>
+    </div>
+  </nav>
+
+  <div
+    id="mobile-menu"
+    class="hidden border-b border-line bg-white shadow-card 2xl:hidden"
+  >
+    <ul class="container-px space-y-1 py-4">
+      {mainNav.map((item) => (
+        <li>
+          {'children' in item && item.children ? (
+            <details class="group/acc rounded-lg">
+              <summary class="flex cursor-pointer list-none items-center justify-between rounded-lg px-3 py-3 text-base font-semibold text-navy hover:bg-mist">
+                {item.label}
+                <Icon name="chevron-down" class="h-5 w-5 transition-transform group-open/acc:rotate-180" />
+              </summary>
+              <ul class="ml-2 mt-1 space-y-1 border-l-2 border-line pl-3">
+                {item.children.map((child) => (
+                  <li>
+                    <a
+                      href={child.href}
+                      aria-label={child.label}
+                      class="block rounded-md px-3 py-2 text-sm text-slate-600 hover:bg-mist hover:text-navy"
+                    >
+                      {child.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </details>
+          ) : (
+            <a
+              href={item.href}
+              aria-label={item.label}
+              class="block rounded-lg px-3 py-3 text-base font-semibold text-navy hover:bg-mist"
+            >
+              {item.label}
+            </a>
+          )}
+        </li>
+      ))}
+      <li class="pt-2">
+        <a href="/contact/" class="btn-primary w-full">Prendre rendez-vous</a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<script>
+  const toggle = document.getElementById('menu-toggle');
+  const menu = document.getElementById('mobile-menu');
+  const openIcon = toggle?.querySelector('.menu-open');
+  const closeIcon = toggle?.querySelector('.menu-close');
+
+  toggle?.addEventListener('click', () => {
+    const isOpen = menu?.classList.toggle('hidden') === false;
+    toggle.setAttribute('aria-expanded', String(isOpen));
+    toggle.setAttribute('aria-label', isOpen ? 'Fermer le menu' : 'Ouvrir le menu');
+    openIcon?.classList.toggle('hidden', isOpen);
+    closeIcon?.classList.toggle('hidden', !isOpen);
+  });
+</script>

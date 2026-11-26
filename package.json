@@ -1,0 +1,19 @@
+{
+  "name": "provence-compta",
+  "type": "module",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/tailwind": "^5.1.4",
+    "@fontsource/inter": "^5.3.0",
+    "@fontsource/lora": "^5.3.0",
+    "astro": "^5.18.2",
+    "tailwindcss": "^3.4.19"
+  }
+}

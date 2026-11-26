@@ -1,0 +1,143 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------------------------------------------------------------
+   Fonts (loaded via <link> in Layout for performance/preconnect)
+   --------------------------------------------------------------- */
+
+@layer base {
+  :root {
+    --header-h: 80px;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: var(--header-h);
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-white text-ink font-sans antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-serif text-navy;
+    text-wrap: balance;
+  }
+
+  /* Visible, accessible focus state across the whole site */
+  :focus-visible {
+    outline: 2px solid theme('colors.accent.DEFAULT');
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  /* Respect reduced-motion preferences */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  .container-px {
+    @apply mx-auto w-full max-w-content px-5 sm:px-6 lg:px-8;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5
+           text-sm font-semibold tracking-wide transition-all duration-200
+           focus-visible:outline-none;
+    transform: translateZ(0);
+  }
+  .btn-primary {
+    @apply btn bg-accent text-white shadow-[0_18px_45px_-24px_rgba(0,152,168,0.85)] hover:bg-accent-600
+           hover:shadow-card-hover active:translate-y-px;
+  }
+  .btn-secondary {
+    @apply btn border border-line bg-white text-navy shadow-soft hover:border-accent
+           hover:text-accent hover:shadow-card;
+  }
+  .btn-ghost-light {
+    @apply btn border border-white/70 text-white hover:bg-white/10;
+  }
+
+  .eyebrow {
+    @apply inline-flex items-center gap-2 text-xs font-semibold uppercase
+           tracking-[0.22em] text-accent;
+  }
+
+  .prose-content p {
+    @apply text-[15px] leading-7 text-slate-600;
+  }
+}
+
+@layer utilities {
+  .motion-ready [data-animate] {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0);
+    transition:
+      opacity 680ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 680ms cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 220ms ease,
+      background-color 220ms ease,
+      box-shadow 220ms ease;
+    transition-delay: var(--reveal-delay, 0ms);
+    will-change: opacity, transform;
+  }
+
+  .motion-ready [data-animate='fade-left'] {
+    transform: translate3d(18px, 0, 0);
+  }
+
+  .motion-ready [data-animate='fade-right'] {
+    transform: translate3d(-18px, 0, 0);
+  }
+
+  .motion-ready [data-animate='zoom-in'] {
+    transform: scale(0.965);
+  }
+
+  .motion-ready [data-animate].is-visible {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  .btn,
+  article,
+  a[class*='shadow'],
+  img {
+    backface-visibility: hidden;
+  }
+
+  .btn:hover svg,
+  a:hover svg {
+    transform: translateX(2px);
+  }
+
+  article:hover [class*='bg-accent/10'],
+  a:hover [class*='bg-accent/10'] {
+    transform: translateY(-2px) scale(1.03);
+  }
+
+  article [class*='bg-accent/10'],
+  a [class*='bg-accent/10'],
+  .btn svg,
+  a svg {
+    transition: transform 220ms ease, background-color 220ms ease, color 220ms ease;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .motion-ready [data-animate] {
+      opacity: 1 !important;
+      transform: none !important;
+      transition: none !important;
+    }
+  }
+}

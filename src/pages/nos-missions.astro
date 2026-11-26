@@ -1,0 +1,87 @@
+---
+import Layout from '@layouts/Layout.astro';
+import Hero from '@components/Hero.astro';
+import SectionHeading from '@components/SectionHeading.astro';
+import MissionCard from '@components/MissionCard.astro';
+import FeatureCard from '@components/FeatureCard.astro';
+import SectorCard from '@components/SectorCard.astro';
+import { missions, approach, missionBenefits } from '@data/missions';
+import { sectors } from '@data/sectors';
+---
+<Layout
+  title="Nos missions d’expert-comptable en Provence"
+  description="Expertise comptable, conseil fiscal, gestion sociale et paie, accompagnement juridique, création d’entreprise et pilotage : découvrez les missions de Provence Compta."
+  path="/nos-missions/"
+>
+  <Hero
+    eyebrow="Expertise comptable et conseil"
+    badge="Accompagnement sur mesure"
+    title="Des missions construites pour sécuriser, piloter et développer votre activité."
+    subtitle="De la tenue comptable au conseil stratégique, chaque mission est pensée pour alléger votre charge, fiabiliser vos obligations et renforcer vos décisions."
+    images={['/images/heroes/missions-1.webp', '/images/heroes/missions-2.webp']}
+    trustItems={['Conformité', 'Pilotage', 'Accompagnement durable']}
+    primaryCTA={{ label: 'Échanger sur vos besoins', href: '/contact/' }}
+    secondaryCTA={{ label: 'Mieux nous connaître', href: '/qui-sommes-nous/' }}
+  />
+
+  <!-- Approche -->
+  <section class="py-20 md:py-24">
+    <div class="container-px grid gap-12 lg:grid-cols-[0.95fr_1.05fr]">
+      <SectionHeading
+        eyebrow="Notre approche"
+        title="Des missions qui vont au-delà de la simple production comptable"
+        intro="Nous accompagnons les dirigeants avec une vision globale de leur activité : fiabiliser les obligations, clarifier les décisions importantes et transformer les chiffres en outils de pilotage concrets."
+      />
+      <div class="grid gap-5 sm:grid-cols-2">
+        {approach.map((item) => <FeatureCard title={item.title} description={item.description} />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- Missions principales -->
+  <section class="border-y border-line bg-mist py-20 md:py-24">
+    <div class="container-px">
+      <SectionHeading
+        eyebrow="Missions principales"
+        title="Une offre de services complète pour accompagner chaque étape de la vie de votre entreprise."
+        intro="Comptabilité, paie, fiscalité, juridique, création et pilotage : découvrez le détail de chaque mission."
+      />
+      <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {missions.map((mission) => (
+          <div id={mission.slug} class="scroll-mt-28">
+            <MissionCard mission={mission} />
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Pour qui -->
+  <section class="py-20 md:py-24">
+    <div class="container-px">
+      <SectionHeading
+        eyebrow="Pour qui ?"
+        title="Des missions adaptées à des profils et secteurs très différents"
+        intro="Notre accompagnement s’adresse aux entrepreneurs, indépendants et structures locales qui veulent un cabinet fiable, accessible et utile."
+      />
+      <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {sectors.map((sector) => <SectorCard sector={sector} />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- Bénéfices -->
+  <section class="border-t border-line bg-mist py-20 md:py-24">
+    <div class="container-px">
+      <SectionHeading
+        eyebrow="Pourquoi choisir notre accompagnement"
+        title="Un service qui combine expertise technique, sécurité et vision de développement."
+      />
+      <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {missionBenefits.map((item) => (
+          <FeatureCard title={item.title} description={item.description} icon="check" />
+        ))}
+      </div>
+    </div>
+  </section>
+</Layout>

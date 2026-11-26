@@ -1,0 +1,48 @@
+---
+import { Image } from 'astro:assets';
+
+interface Props {
+  variant?: 'dark' | 'light';
+  showText?: boolean;
+  loading?: 'eager' | 'lazy';
+  fetchpriority?: 'high' | 'low' | 'auto';
+  class?: string;
+}
+
+const {
+  variant = 'dark',
+  showText = true,
+  loading = 'lazy',
+  fetchpriority = 'auto',
+  class: className = '',
+} = Astro.props;
+const wordMain = variant === 'light' ? 'text-white' : 'text-navy';
+const subColor = variant === 'light' ? 'text-white/70' : 'text-slate-500';
+const accentColor = variant === 'light' ? 'text-accent-300' : 'text-accent';
+---
+<a
+  href="/"
+  class={`group inline-flex min-w-0 items-center gap-3 ${className}`}
+  aria-label="Provence Compta - accueil"
+>
+  <Image
+    src="/images/logo.png"
+    alt="Provence Compta"
+    width="44"
+    height="44"
+    loading={loading}
+    fetchpriority={fetchpriority}
+    decoding="async"
+    class="h-11 w-11 shrink-0 transition-transform duration-200 group-hover:-translate-y-0.5"
+  />
+  {showText && (
+    <span class="flex min-w-0 flex-col leading-none">
+      <span class={`whitespace-nowrap font-serif text-[21px] font-semibold leading-[0.96] tracking-tight ${wordMain}`}>
+        Provence <span class={accentColor}>Compta</span>
+      </span>
+      <span class={`mt-1.5 whitespace-nowrap text-[9px] font-semibold uppercase tracking-[0.24em] ${subColor}`}>
+        Experts-comptables
+      </span>
+    </span>
+  )}
+</a>

@@ -1,0 +1,140 @@
+---
+import Layout from '@layouts/Layout.astro';
+import Hero from '@components/Hero.astro';
+import SectionHeading from '@components/SectionHeading.astro';
+import MissionCard from '@components/MissionCard.astro';
+import SectorCard from '@components/SectorCard.astro';
+import CabinetCard from '@components/CabinetCard.astro';
+import Icon from '@components/Icon.astro';
+import { missions } from '@data/missions';
+import { sectors } from '@data/sectors';
+import { cabinets } from '@data/cabinets';
+
+const stats = [
+  { value: '4', label: 'cabinets de proximité' },
+  { value: '6', label: "domaines d'expertise" },
+  { value: '1', label: 'interlocuteur dédié par dossier' },
+  { value: '360°', label: "vision globale de l'accompagnement" },
+];
+---
+<Layout
+  title="Provence Compta"
+  description="Expert-comptable en Provence pour dirigeants, TPE, PME, professions libérales et créateurs d’entreprise. Comptabilité, fiscalité, paie et conseil."
+  path="/"
+>
+  <Hero
+    size="home"
+    eyebrow="Cabinets d'expertise comptable"
+    title="Expert-comptable en Provence pour dirigeants, TPE et PME."
+    subtitle="Provence Compta accompagne dirigeants, professions libérales, associations et créateurs avec une approche claire, rigoureuse et durable."
+    images={['/images/heroes/home-1.webp', '/images/heroes/home-2.webp', '/images/heroes/home-3.webp']}
+    primaryCTA={{ label: 'Parler à un expert', href: '/contact/' }}
+    secondaryCTA={{ label: 'Découvrir nos missions', href: '/nos-missions/' }}
+    trustItems={['Accompagnement sur mesure', 'Conseil fiable', 'Proximité terrain']}
+  />
+
+  <section class="bg-white py-20 md:py-24">
+    <div class="container-px grid items-start gap-12 lg:grid-cols-[0.95fr_1.05fr]">
+      <div>
+        <p class="eyebrow">Pourquoi Provence Compta</p>
+        <h2 class="mt-5 max-w-2xl font-serif text-3xl font-semibold leading-tight text-navy md:text-[2.75rem]">
+          Un cabinet comptable pour les dirigeants qui veulent de la clarté, de la fiabilité et un vrai partenaire de confiance.
+        </h2>
+        <div class="mt-8 max-w-2xl space-y-5 text-lg leading-9 text-slate-600">
+          <p>
+            Nous accompagnons les entrepreneurs avec une approche humaine, structurée et durable. Notre mission ne se limite pas à produire des chiffres : nous donnons de la lisibilité à vos obligations comptables, fiscales et sociales, et de la solidité à vos décisions.
+          </p>
+        </div>
+        <div class="mt-9 flex flex-wrap gap-4">
+          <a href="/qui-sommes-nous/" class="btn-primary">
+            Découvrir le groupe
+            <Icon name="arrow-right" class="h-4 w-4" />
+          </a>
+          <a href="/contact/" class="btn-secondary">Échanger avec un expert</a>
+        </div>
+      </div>
+
+      <div class="grid gap-6">
+        <article class="rounded-[1.35rem] border border-line bg-white/90 p-8 shadow-[0_24px_70px_-45px_rgba(11,37,69,0.5)] md:p-10">
+          <span class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-accent/10">
+            <span class="h-3 w-3 rounded-full bg-accent"></span>
+          </span>
+          <h3 class="mt-8 text-2xl font-semibold text-navy">Une relation de confiance durable</h3>
+          <p class="mt-5 text-lg leading-8 text-slate-600">
+            Un interlocuteur disponible, une communication claire et un accompagnement adapté à chaque stade de votre activité.
+          </p>
+        </article>
+
+        <article class="rounded-[1.35rem] border border-line bg-white/90 p-8 shadow-[0_24px_70px_-45px_rgba(11,37,69,0.5)] md:p-10">
+          <span class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-accent/10">
+            <span class="h-3 w-3 rounded-full bg-accent"></span>
+          </span>
+          <h3 class="mt-8 text-2xl font-semibold text-navy">Des décisions mieux éclairées</h3>
+          <p class="mt-5 text-lg leading-8 text-slate-600">
+            Nous transformons vos données comptables, fiscales et sociales en outils concrets de pilotage et d'anticipation.
+          </p>
+        </article>
+
+        <article class="rounded-[1.35rem] border border-line bg-white/90 p-8 shadow-[0_24px_70px_-45px_rgba(11,37,69,0.5)] md:p-10">
+          <span class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-accent/10">
+            <span class="h-3 w-3 rounded-full bg-accent"></span>
+          </span>
+          <h3 class="mt-8 text-2xl font-semibold text-navy">La proximité d'un cabinet, la force d'un groupe</h3>
+          <p class="mt-5 text-lg leading-8 text-slate-600">
+            Quatre implantations, une même exigence de rigueur, de réactivité et de qualité de conseil au service des dirigeants.
+          </p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-y border-line bg-mist">
+    <div class="container-px grid grid-cols-2 gap-6 py-12 md:grid-cols-4">
+      {stats.map((s) => (
+        <div class="text-center">
+          <p class="font-serif text-4xl font-semibold text-navy">{s.value}</p>
+          <p class="mx-auto mt-2 max-w-[14ch] text-sm leading-6 text-slate-600">{s.label}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="py-20 md:py-24">
+    <div class="container-px">
+      <SectionHeading
+        eyebrow="Nos missions"
+        title="Comptabilité, fiscalité, paie et conseil pour chaque étape de votre entreprise"
+        intro="De la tenue comptable au conseil stratégique, nous intervenons avec rigueur, pédagogie et sens du résultat."
+      />
+      <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {missions.map((mission) => <MissionCard mission={mission} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="border-y border-line bg-mist py-20 md:py-24">
+    <div class="container-px">
+      <SectionHeading
+        eyebrow="Profils accompagnés"
+        title="Des expertises pensées pour vos réalités de terrain."
+        intro="Chaque activité a ses propres contraintes, ses rythmes et ses enjeux. Nous adaptons notre accompagnement pour apporter des réponses claires, fiables et utiles à votre développement."
+      />
+      <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {sectors.map((sector) => <SectorCard sector={sector} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="py-20 md:py-24">
+    <div class="container-px">
+      <SectionHeading
+        eyebrow="Nos cabinets"
+        title="Une présence locale, une même exigence de qualité et de conseil."
+        intro="Chaque cabinet conserve sa proximité terrain tout en partageant la même vision du service : clarté, réactivité et accompagnement de long terme."
+      />
+      <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {cabinets.map((cabinet) => <CabinetCard cabinet={cabinet} />)}
+      </div>
+    </div>
+  </section>
+</Layout>

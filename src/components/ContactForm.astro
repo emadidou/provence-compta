@@ -1,0 +1,142 @@
+---
+const endpoint = '/contact.php';
+const inputClass =
+  'h-12 w-full rounded-lg border border-line bg-white px-4 text-[15px] text-ink outline-none transition placeholder:text-slate-500 focus:border-accent focus:ring-4 focus:ring-accent/10';
+const labelClass = 'mb-1.5 block text-sm font-medium text-navy';
+---
+<form id="contact-form" action={endpoint} method="post" class="space-y-5" novalidate>
+  <p class="text-sm text-slate-500">Les champs marqués d'un astérisque (*) sont obligatoires.</p>
+
+  <div
+    id="form-success"
+    role="status"
+    class="hidden rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800"
+  >
+    Merci, votre demande a bien été envoyée. Nous reviendrons vers vous rapidement.
+  </div>
+
+  <div
+    id="form-error"
+    role="alert"
+    class="hidden rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800"
+  >
+    Une erreur est survenue. Merci de vérifier les champs puis de réessayer.
+  </div>
+
+  <div class="hidden" aria-hidden="true">
+    <label for="website">Site web</label>
+    <input id="website" name="website" type="text" tabindex="-1" autocomplete="off" />
+  </div>
+
+  <div class="grid gap-5 sm:grid-cols-2">
+    <div>
+      <label class={labelClass} for="lastName">Nom *</label>
+      <input class={inputClass} id="lastName" name="lastName" type="text" autocomplete="family-name" required />
+    </div>
+    <div>
+      <label class={labelClass} for="firstName">Prénom</label>
+      <input class={inputClass} id="firstName" name="firstName" type="text" autocomplete="given-name" />
+    </div>
+  </div>
+
+  <div class="grid gap-5 sm:grid-cols-2">
+    <div>
+      <label class={labelClass} for="phone">Téléphone *</label>
+      <input class={inputClass} id="phone" name="phone" type="tel" autocomplete="tel" required />
+    </div>
+    <div>
+      <label class={labelClass} for="email">Email *</label>
+      <input class={inputClass} id="email" name="email" type="email" autocomplete="email" required />
+    </div>
+  </div>
+
+  <div>
+    <label class={labelClass} for="subject">Objet</label>
+    <input class={inputClass} id="subject" name="subject" type="text" placeholder="Résumé rapide de votre demande" />
+  </div>
+
+  <div>
+    <label class={labelClass} for="message">Message *</label>
+    <textarea
+      class="min-h-[160px] w-full rounded-lg border border-line bg-white px-4 py-3 text-[15px] text-ink outline-none transition placeholder:text-slate-500 focus:border-accent focus:ring-4 focus:ring-accent/10"
+      id="message"
+      name="message"
+      rows="6"
+      required
+      placeholder="Expliquez-nous votre besoin, votre contexte ou la nature de votre demande."
+    ></textarea>
+  </div>
+
+  <label class="flex items-start gap-3 rounded-lg border border-line bg-mist/70 px-4 py-3.5 text-sm leading-6 text-slate-600">
+    <input
+      id="consent"
+      name="consent"
+      type="checkbox"
+      value="1"
+      required
+      class="mt-1 h-4 w-4 shrink-0 rounded border-slate-300 text-accent focus:ring-accent"
+    />
+    <span>
+      En soumettant ce formulaire, j'accepte que mes informations soient traitées pour répondre à ma demande,
+      dans le respect de la confidentialité.
+    </span>
+  </label>
+
+  <div class="flex flex-wrap items-center justify-between gap-4">
+    <p class="text-sm text-slate-500">Un premier échange simple et confidentiel.</p>
+    <button type="submit" class="btn-primary w-full sm:w-auto">
+      <span data-submit-label>Envoyer votre demande</span>
+    </button>
+  </div>
+</form>
+
+<script>
+  const form = document.getElementById('contact-form') as HTMLFormElement | null;
+  const success = document.getElementById('form-success');
+  const error = document.getElementById('form-error');
+  const submitLabel = form?.querySelector('[data-submit-label]');
+
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('sent') === '1') {
+    success?.classList.remove('hidden');
+    document.dispatchEvent(new CustomEvent('pc:lead'));
+  }
+  if (params.get('sent') === '0') {
+    error?.classList.remove('hidden');
+  }
+
+  form?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    success?.classList.add('hidden');
+    error?.classList.add('hidden');
+
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+
+    const submitButton = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+    submitButton?.setAttribute('disabled', 'true');
+    submitLabel && (submitLabel.textContent = 'Envoi en cours...');
+
+    try {
+      const response = await fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { Accept: 'application/json' },
+      });
+      const result = await response.json().catch(() => ({ ok: false }));
+      if (!response.ok || !result.ok) {
+        throw new Error(result.message || 'Form submission failed');
+      }
+      form.reset();
+      success?.classList.remove('hidden');
+      document.dispatchEvent(new CustomEvent('pc:lead'));
+    } catch {
+      error?.classList.remove('hidden');
+    } finally {
+      submitButton?.removeAttribute('disabled');
+      submitLabel && (submitLabel.textContent = 'Envoyer votre demande');
+    }
+  });
+</script>

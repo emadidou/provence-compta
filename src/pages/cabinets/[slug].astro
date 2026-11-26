@@ -1,0 +1,276 @@
+---
+import { Image } from 'astro:assets';
+import Layout from '@layouts/Layout.astro';
+import Hero from '@components/Hero.astro';
+import SectionHeading from '@components/SectionHeading.astro';
+import FeatureCard from '@components/FeatureCard.astro';
+import Icon from '@components/Icon.astro';
+import { cabinets } from '@data/cabinets';
+import { missions } from '@data/missions';
+import { getSectorBySlug } from '@data/sectors';
+import { site } from '@data/site';
+
+export function getStaticPaths() {
+  return cabinets.map((cabinet) => ({
+    params: { slug: cabinet.slug },
+    props: { cabinet },
+  }));
+}
+
+const { cabinet } = Astro.props;
+const mapSrc = cabinet.hideMap
+  ? undefined
+  : cabinet.mapEmbedUrl ?? `https://www.google.com/maps?q=${encodeURIComponent(cabinet.mapQuery)}&output=embed`;
+const mapsLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(cabinet.mapQuery)}`;
+const cabinetUrl = `${site.url}/cabinets/${cabinet.slug}/`;
+// « à Cavaillon », mais « aux Angles » (et on vise aussi les recherches sur Avignon).
+const atCity = cabinet.slug === 'les-angles' ? 'aux Angles, près d’Avignon' : `à ${cabinet.city}`;
+const cabinetDescription = `Expert-comptable ${atCity} (${cabinet.dept}) pour TPE, PME, dirigeants et créateurs d'entreprise : comptabilité, fiscalité, paie et conseil. ${cabinet.phone}.`;
+const cabinetSectors = cabinet.sectors.map((slug) => {
+  const s = getSectorBySlug(slug);
+  if (!s) throw new Error(`Profil inconnu « ${slug} » pour le cabinet ${cabinet.slug}`);
+  return s;
+});
+const ofCity = cabinet.slug === 'les-angles' ? 'des Angles' : `de ${cabinet.city}`;
+const initials = (name: string) => name.split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase();
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: cabinet.faq.map((f) => ({
+    '@type': 'Question',
+    name: f.question,
+    acceptedAnswer: { '@type': 'Answer', text: f.answer },
+  })),
+};
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'AccountingService',
+  '@id': `${cabinetUrl}#localbusiness`,
+  name: `Provence Compta ${cabinet.dept} - ${cabinet.city}`,
+  description: cabinetDescription,
+  url: cabinetUrl,
+  telephone: cabinet.phone,
+  email: site.email,
+  image: new URL(cabinet.heroImage, site.url).href,
+  priceRange: '€€',
+  openingHours: 'Mo-Fr 08:30-17:30',
+  sameAs: site.sameAs,
+  hasMap: mapsLink,
+  areaServed: [cabinet.city, ...cabinet.communes, cabinet.region].map((name) => ({ '@type': 'City', name })),
+  parentOrganization: { '@id': `${site.url}/#organization` },
+  employee: cabinet.team.map((m) => ({ '@type': 'Person', name: m.name, jobTitle: m.role })),
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: cabinet.address,
+    addressLocality: cabinet.city,
+    postalCode: cabinet.postalCode,
+    addressRegion: cabinet.region,
+    addressCountry: 'FR',
+  },
+  contactPoint: {
+    '@type': 'ContactPoint',
+    telephone: cabinet.phone,
+    email: site.email,
+    contactType: 'customer service',
+    areaServed: 'FR',
+    availableLanguage: ['fr'],
+  },
+};
+---
+<Layout
+  title={`Expert-comptable ${atCity} (${cabinet.dept})`}
+  description={cabinetDescription}
+  path={`/cabinets/${cabinet.slug}/`}
+  jsonLd={[jsonLd, faqJsonLd]}
+>
+  <Hero
+    eyebrow={cabinet.eyebrow}
+    badge={cabinet.city}
+    title={cabinet.heroTitle}
+    subtitle={cabinet.heroSubtitle}
+    images={[cabinet.heroImage, cabinet.presentationImage]}
+    primaryCTA={{ label: 'Nous contacter', href: '/contact/' }}
+    secondaryCTA={{ label: 'Appeler le cabinet', href: `tel:${cabinet.phoneHref}` }}
+    trustItems={[`Provence Compta ${cabinet.dept}`, cabinet.region, 'Proximité']}
+  />
+
+  <section class="py-20 md:py-24">
+    <div class="container-px grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
+      <div>
+        <p class="eyebrow">Le cabinet</p>
+        <h2 class="mt-3 font-serif text-3xl font-semibold leading-tight text-navy md:text-[2.3rem]">
+          {cabinet.presentationTitle}
+        </h2>
+        <div class="mt-6 space-y-5 text-[15px] leading-7 text-slate-600">
+          {cabinet.presentationBody.map((p) => <p>{p}</p>)}
+        </div>
+        <div class="mt-6 rounded-xl border-l-4 border-accent bg-mist p-5 text-[15px] leading-7 text-navy">
+          {cabinet.localAnchoring}
+        </div>
+      </div>
+      <div class="overflow-hidden rounded-xl border border-line bg-white p-2.5 shadow-card">
+        <Image
+          src={cabinet.presentationImage}
+          alt={`Cabinet Provence Compta ${cabinet.city}`}
+          width={840}
+          height={560}
+          loading="lazy"
+          decoding="async"
+          class="h-[420px] w-full rounded-lg object-cover"
+        />
+      </div>
+    </div>
+  </section>
+
+  <section class="border-y border-line bg-mist py-20 md:py-24">
+    <div class="container-px">
+      <SectionHeading eyebrow="Nos expertises" title="Un accompagnement comptable, fiscal et de gestion" />
+      <div class="mt-12 grid gap-6 md:grid-cols-3">
+        {cabinet.expertises.map((e) => <FeatureCard title={e.title} description={e.description} icon="check" />)}
+      </div>
+      <div class="mt-10 flex flex-wrap gap-3">
+        {missions.map((m) => (
+          <a href={`/nos-missions/${m.slug}/`} class="inline-flex items-center gap-2 rounded-full border border-line bg-white px-4 py-2.5 text-sm font-medium text-navy shadow-soft transition hover:border-accent hover:text-accent">
+            <Icon name={m.icon} class="h-4 w-4 text-accent" />
+            {m.title}
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="py-20 md:py-24">
+    <div class="container-px grid gap-12 lg:grid-cols-[0.85fr_1.15fr]">
+      <div>
+        <SectionHeading eyebrow="Profils accompagnés" title="Des secteurs que nous connaissons bien" />
+        <ul class="mt-7 flex flex-wrap gap-2.5">
+          {cabinetSectors.map((s) => (
+            <li>
+              <a href={`/profils/${s.slug}/`} class="inline-flex items-center gap-2 rounded-full border border-line bg-white px-4 py-2 text-sm font-medium text-navy shadow-soft transition hover:border-accent hover:text-accent">
+                <Icon name={s.icon} class="h-4 w-4 text-accent" />
+                {s.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div>
+        <SectionHeading eyebrow="Nos forces" title="Pourquoi nous faire confiance" />
+        <div class="mt-7 grid gap-5 sm:grid-cols-2">
+          {cabinet.strengths.map((s) => <FeatureCard title={s.title} description={s.description} />)}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-y border-line bg-mist py-20 md:py-24">
+    <div class="container-px">
+      <SectionHeading eyebrow="L'équipe" title="Vos interlocuteurs au cabinet" />
+      <div class={`mt-12 grid gap-6 sm:grid-cols-2 ${cabinet.team.length > 2 ? 'xl:grid-cols-3' : ''}`}>
+        {cabinet.team.map((m) => (
+          <article class="flex gap-5 rounded-xl border border-line bg-white p-5 shadow-card">
+            {m.image ? (
+              <Image
+                src={m.image}
+                alt={`${m.name}, ${m.role}`}
+                width={192}
+                height={192}
+                loading="lazy"
+                decoding="async"
+                class="h-24 w-24 shrink-0 rounded-lg object-cover"
+                style={m.imagePosition ? `object-position:${m.imagePosition}` : undefined}
+              />
+            ) : (
+              <div
+                class="flex h-24 w-24 shrink-0 items-center justify-center rounded-lg bg-navy font-serif text-2xl font-semibold text-white"
+                aria-hidden="true"
+              >
+                {initials(m.name)}
+              </div>
+            )}
+            <div class="min-w-0">
+              <h3 class="text-lg font-semibold text-navy">{m.name}</h3>
+              <p class="mt-0.5 text-sm font-medium text-accent">{m.role}</p>
+              <p class="mt-2.5 text-sm leading-6 text-slate-600">{m.bio}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="py-20 md:py-24">
+    <div class="container-px grid gap-12 lg:grid-cols-[0.85fr_1.15fr]">
+      <div>
+        <SectionHeading
+          eyebrow="Zone d'intervention"
+          title={`Votre expert-comptable ${atCity} et alentours`}
+          intro={`Le cabinet accompagne des entreprises de ${cabinet.city} et des communes voisines.`}
+        />
+        <ul class="mt-7 flex flex-wrap gap-2.5">
+          <li class="rounded-full bg-navy px-4 py-2 text-sm font-semibold text-white">{cabinet.city}</li>
+          {cabinet.communes.map((c) => (
+            <li class="rounded-full border border-line bg-white px-4 py-2 text-sm font-medium text-navy shadow-soft">{c}</li>
+          ))}
+        </ul>
+      </div>
+      <div>
+        <SectionHeading eyebrow="Questions fréquentes" title={`Expert-comptable ${atCity} : vos questions`} />
+        <div class="mt-7 divide-y divide-line rounded-xl border border-line bg-white shadow-card">
+          {cabinet.faq.map((f) => (
+            <details class="group p-5 sm:px-6">
+              <summary class="flex cursor-pointer list-none items-start justify-between gap-4 font-semibold text-navy [&::-webkit-details-marker]:hidden">
+                <h3 class="text-[15px] leading-6">{f.question}</h3>
+                <span class="mt-0.5 text-accent transition-transform group-open:rotate-45" aria-hidden="true">+</span>
+              </summary>
+              <p class="mt-3 text-sm leading-6 text-slate-600">{f.answer}</p>
+            </details>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-line bg-mist py-20 md:py-24">
+    <div class={`container-px grid gap-10 lg:items-stretch ${mapSrc ? 'lg:grid-cols-[0.8fr_1.2fr]' : 'lg:grid-cols-1'}`}>
+      <div class="rounded-xl border border-line bg-white p-6 shadow-card sm:p-8">
+        <SectionHeading eyebrow="Coordonnées" title={`Cabinet ${ofCity}`} />
+        <ul class="mt-7 space-y-5 text-[15px]">
+          <li class="flex items-start gap-3">
+            <Icon name="map-pin" class="mt-0.5 h-5 w-5 shrink-0 text-accent" />
+            <a href={mapsLink} target="_blank" rel="noopener noreferrer" class="text-navy hover:text-accent">
+              {cabinet.address}, {cabinet.postalCode} {cabinet.city}
+            </a>
+          </li>
+          <li class="flex items-start gap-3">
+            <Icon name="phone" class="mt-0.5 h-5 w-5 shrink-0 text-accent" />
+            <a href={`tel:${cabinet.phoneHref}`} class="font-semibold text-navy hover:text-accent">{cabinet.phone}</a>
+          </li>
+          <li class="flex items-start gap-3">
+            <Icon name="mail" class="mt-0.5 h-5 w-5 shrink-0 text-accent" />
+            <a href={`mailto:${site.email}`} class="break-words text-navy hover:text-accent">{site.email}</a>
+          </li>
+          <li class="flex items-start gap-3">
+            <Icon name="clock" class="mt-0.5 h-5 w-5 shrink-0 text-accent" />
+            <span class="text-slate-600">{site.hours}</span>
+          </li>
+        </ul>
+        <a href="/contact/" class="btn-primary mt-8 w-full">Prendre rendez-vous</a>
+      </div>
+
+      {mapSrc && (
+        <div class="overflow-hidden rounded-xl border border-line shadow-card">
+          <iframe
+            title={`Localisation du cabinet ${ofCity}`}
+            src={mapSrc}
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            class="h-full min-h-[360px] w-full"
+          ></iframe>
+        </div>
+      )}
+    </div>
+  </section>
+</Layout>

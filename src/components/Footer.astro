@@ -1,0 +1,104 @@
+---
+import { Image } from 'astro:assets';
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import { site, sectorNav } from '@data/site';
+import { missions } from '@data/missions';
+import { cabinets } from '@data/cabinets';
+
+const year = new Date().getFullYear();
+const ordreLink = 'https://annuaire.experts-comptables.org/recherche?localite=&adresse=&insee=&type_localite=&localityLat=&localityLon=&comptable=naji+moslim';
+---
+<footer class="bg-navy text-white/80">
+  <div class="container-px grid gap-10 py-14 md:grid-cols-2 lg:grid-cols-4">
+    <div class="lg:pr-4">
+      <Logo variant="light" loading="lazy" />
+      <p class="mt-5 text-sm leading-6 text-white/65">
+        Groupement de cabinets d'expertise comptable indépendants, ancrés dans
+        leur territoire et au service des entrepreneurs de Provence.
+      </p>
+
+      <a
+        href={ordreLink}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="mt-6 flex items-center gap-4 rounded-2xl border border-white/70 bg-white/5 p-4 text-white transition-colors hover:border-accent-300 hover:bg-white/10"
+      >
+        <Image
+          src="/images/oec-150x150.jpg"
+          alt="Ordre des experts-comptables"
+          width={64}
+          height={64}
+          loading="lazy"
+          decoding="async"
+          class="h-16 w-16 shrink-0 rounded-xl bg-white p-1.5"
+        />
+        <span class="text-sm font-semibold leading-6">
+          Membre de l'Ordre des experts-comptables
+        </span>
+      </a>
+
+      <div class="mt-5 flex gap-3">
+        <a
+          href={site.social.linkedin}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="flex h-9 w-9 items-center justify-center rounded-lg border border-white/15 text-white/70 hover:border-accent hover:text-white"
+          aria-label="LinkedIn"
+        >
+          <Icon name="linkedin" class="h-4 w-4" />
+        </a>
+      </div>
+    </div>
+
+    <nav aria-label="Nos missions">
+      <h2 class="text-sm font-semibold uppercase tracking-wider text-white">Nos missions</h2>
+      <ul class="mt-4 space-y-2.5 text-sm">
+        {missions.map((m) => (
+          <li>
+            <a href={`/nos-missions/${m.slug}/`} class="text-white/65 transition-colors hover:text-white">
+              {m.title}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <nav aria-label="Profils accompagnés">
+      <h2 class="text-sm font-semibold uppercase tracking-wider text-white">Profils accompagnés</h2>
+      <ul class="mt-4 space-y-2.5 text-sm">
+        {sectorNav.map((s) => (
+          <li>
+            <a href={s.href} class="text-white/65 transition-colors hover:text-white">{s.label}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <nav aria-label="Nos cabinets">
+      <h2 class="text-sm font-semibold uppercase tracking-wider text-white">Nos cabinets</h2>
+      <ul class="mt-4 space-y-4 text-sm">
+        {cabinets.map((c) => (
+          <li>
+            <a href={`/cabinets/${c.slug}/`} class="font-medium text-white transition-colors hover:text-accent-300">
+              {c.city} <span class="text-white/60">({c.dept})</span>
+            </a>
+            <p class="mt-1 text-white/55">{c.address}, {c.postalCode}</p>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  </div>
+
+  <div class="border-t border-white/10">
+    <div class="container-px flex flex-col items-center justify-between gap-3 py-5 text-xs text-white/50 sm:flex-row">
+      <p>© {year} {site.legalName}. Tous droits réservés.</p>
+      <div class="flex items-center gap-5">
+        <a href="/mentions-legales/" class="hover:text-white">Mentions légales</a>
+        {site.gaMeasurementId && (
+          <button type="button" data-cookie-settings class="hover:text-white">Gérer les cookies</button>
+        )}
+      </div>
+    </div>
+  </div>
+</footer>

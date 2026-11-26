@@ -1,0 +1,20 @@
+# Dépendances et fichiers générés
+node_modules/
+dist/
+.astro/
+
+# Originaux des photos avant compression (77 Mo, gardés en local)
+_images-originales/
+
+# Documents internes du client (ne pas publier)
+Rapport-Marketing-SEO-Provence-Compta.pdf
+*.xlsx
+
+# Système / éditeurs
+.DS_Store
+Thumbs.db
+*.log
+.env
+.env.*
+.vscode/
+.idea/

@@ -1,0 +1,85 @@
+---
+import Layout from '@layouts/Layout.astro';
+import Hero from '@components/Hero.astro';
+import ContactForm from '@components/ContactForm.astro';
+import Icon from '@components/Icon.astro';
+import { site } from '@data/site';
+import { cabinets } from '@data/cabinets';
+
+const points = [
+  'Un premier échange clair et confidentiel',
+  'Une réponse adaptée à votre situation',
+  'Un accompagnement comptable, fiscal et de gestion',
+];
+---
+<Layout
+  title="Contacter un expert-comptable en Provence"
+  description="Contactez Provence Compta : adresse et formulaire. Nos cabinets de Salon-de-Provence, Cavaillon, Les Angles et La Seyne-sur-Mer sont à votre écoute."
+  path="/contact/"
+  showContactBanner={false}
+>
+  <Hero
+    eyebrow="Échange confidentiel"
+    badge="Disponibilité et écoute"
+    title="Parlons de vos enjeux comptables, fiscaux et de gestion."
+    subtitle="Comptabilité, fiscalité, paie ou pilotage : notre équipe est à votre disposition pour répondre avec clarté et précision."
+    images={['/images/heroes/contact-1.webp']}
+    trustItems={['Disponibilité', 'Écoute', 'Proximité']}
+    primaryCTA={{ label: 'Nous écrire', href: '#formulaire-contact' }}
+    secondaryCTA={{ label: 'Voir nos missions', href: '/nos-missions/' }}
+  />
+
+  <section class="py-20 md:py-24">
+    <div class="container-px grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
+      <div class="space-y-6">
+        <div class="rounded-xl border border-line bg-mist p-6 sm:p-8">
+          <p class="eyebrow">Contact</p>
+          <h2 class="mt-3 font-serif text-2xl font-semibold text-navy sm:text-3xl">
+            Un cabinet disponible pour vous orienter simplement.
+          </h2>
+          <ul class="mt-6 space-y-3">
+            {points.map((p) => (
+              <li class="flex items-start gap-3 text-[15px] text-slate-700">
+                <Icon name="check" class="mt-0.5 h-5 w-5 shrink-0 text-accent" />
+                <span>{p}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <a href={`mailto:${site.email}`} class="block rounded-xl border border-line bg-white p-5 shadow-card transition hover:border-accent/40 hover:shadow-card-hover">
+          <span class="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-accent/10 text-accent"><Icon name="mail" class="h-5 w-5" /></span>
+          <p class="mt-4 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Email</p>
+          <p class="mt-1 break-words text-lg font-semibold text-navy">{site.email}</p>
+        </a>
+
+        <div class="rounded-xl border border-line bg-white p-6 shadow-card">
+          <p class="eyebrow">Lignes directes</p>
+          <div class="mt-4 divide-y divide-line">
+            {cabinets.map((c) => (
+              <div class="flex items-center justify-between gap-4 py-3">
+                <div>
+                  <p class="text-sm font-medium text-navy">{c.city} <span class="text-slate-500">({c.dept})</span></p>
+                  <p class="text-xs text-slate-500">{c.address}, {c.postalCode}</p>
+                </div>
+                <a href={`tel:${c.phoneHref}`} data-cabinet={c.slug} class="shrink-0 text-sm font-semibold text-navy transition hover:text-accent">{c.phone}</a>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div id="formulaire-contact" class="scroll-mt-28 rounded-xl border border-line bg-white p-6 shadow-card sm:p-8 md:p-10">
+        <p class="eyebrow">Formulaire de contact</p>
+        <h2 class="mt-3 font-serif text-2xl font-semibold text-navy sm:text-3xl">Écrivez-nous en quelques lignes.</h2>
+        <p class="mt-3 text-[15px] leading-7 text-slate-600">
+          Précisez votre besoin, votre contexte ou la nature de votre demande. Nous reviendrons vers
+          vous avec une réponse claire et adaptée à votre situation.
+        </p>
+        <div class="mt-8">
+          <ContactForm />
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>

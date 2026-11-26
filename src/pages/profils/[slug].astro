@@ -1,0 +1,122 @@
+---
+import Layout from '@layouts/Layout.astro';
+import Hero from '@components/Hero.astro';
+import SectionHeading from '@components/SectionHeading.astro';
+import FeatureCard from '@components/FeatureCard.astro';
+import Icon from '@components/Icon.astro';
+import { sectors } from '@data/sectors';
+
+export function getStaticPaths() {
+  return sectors.map((sector) => ({
+    params: { slug: sector.slug },
+    props: { sector },
+  }));
+}
+
+const { sector } = Astro.props;
+const others = sectors.filter((s) => s.slug !== sector.slug).slice(0, 4);
+---
+<Layout
+  title={`${sector.label} : expert-comptable en Provence`}
+  description={sector.heroSubtitle}
+  path={`/profils/${sector.slug}/`}
+>
+  <Hero
+    eyebrow="Profil accompagné"
+    badge={sector.label}
+    title={sector.heroTitle}
+    subtitle={sector.heroSubtitle}
+    images={[sector.image]}
+    trustItems={sector.trustItems}
+    primaryCTA={{ label: 'Prendre contact', href: '/contact/' }}
+    secondaryCTA={{ label: 'Nos missions', href: '/nos-missions/' }}
+  />
+
+  <!-- Vue d'ensemble -->
+  <section class="py-20 md:py-24">
+    <div class="container-px max-w-content">
+      <SectionHeading eyebrow="Vue d’ensemble" title={sector.overviewTitle} intro={sector.overview} />
+    </div>
+  </section>
+
+  <!-- Vos enjeux -->
+  <section class="border-y border-line bg-mist py-20 md:py-24">
+    <div class="container-px">
+      <SectionHeading eyebrow="Vos enjeux" title="Ce que nous aidons à maîtriser" />
+      <div class="mt-12 grid gap-6 md:grid-cols-3">
+        {sector.needs.map((n) => <FeatureCard title={n.title} description={n.description} icon="check" />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- Notre accompagnement -->
+  <section class="py-20 md:py-24">
+    <div class="container-px">
+      <SectionHeading eyebrow="Notre accompagnement" title="Comment nous intervenons à vos côtés" />
+      <div class="mt-12 grid gap-6 md:grid-cols-3">
+        {sector.support.map((s) => <FeatureCard title={s.title} description={s.description} />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- Bénéfices -->
+  <section class="border-y border-line bg-mist py-20 md:py-24">
+    <div class="container-px">
+      <SectionHeading eyebrow="Les bénéfices" title="Ce que vous y gagnez" />
+      <div class="mt-12 grid gap-6 md:grid-cols-3">
+        {sector.benefits.map((b) => <FeatureCard title={b.title} description={b.description} icon="check" />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- Notre méthode (process) -->
+  <section class="py-20 md:py-24">
+    <div class="container-px">
+      <SectionHeading eyebrow="Notre méthode" title="Une démarche claire, étape par étape" />
+      <div class="mt-12 grid gap-6 md:grid-cols-3">
+        {sector.process.map((p, i) => (
+          <FeatureCard title={p.title} description={p.description} number={String(i + 1)} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Pourquoi nous -->
+  <section class="border-y border-line bg-mist py-20 md:py-24">
+    <div class="container-px">
+      <SectionHeading eyebrow="Pourquoi nous choisir" title="Un partenaire de proximité, lisible et durable" />
+      <div class="mt-12 grid gap-6 sm:grid-cols-2">
+        {sector.whyChooseUs.map((w) => <FeatureCard title={w.title} description={w.description} />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA final -->
+  <section class="py-20 md:py-24">
+    <div class="container-px">
+      <div class="rounded-xl border border-line bg-navy px-6 py-12 text-center shadow-card sm:px-10 md:py-16">
+        <h2 class="mx-auto max-w-2xl font-serif text-2xl font-semibold text-white sm:text-3xl">{sector.finalCtaTitle}</h2>
+        <p class="mx-auto mt-4 max-w-2xl text-base leading-7 text-white/80">{sector.finalCtaText}</p>
+        <div class="mt-8 flex flex-wrap justify-center gap-3">
+          <a href="/contact/" class="btn-primary">Prendre contact <Icon name="arrow-right" class="h-4 w-4" /></a>
+          <a href="/nos-missions/" class="btn-ghost-light">Découvrir nos missions</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Autres profils -->
+  <section class="border-t border-line bg-mist py-16">
+    <div class="container-px">
+      <SectionHeading eyebrow="Autres profils" title="Découvrez d’autres accompagnements" />
+      <div class="mt-8 flex flex-wrap gap-3">
+        {others.map((o) => (
+          <a href={`/profils/${o.slug}/`} class="inline-flex items-center gap-2 rounded-full border border-line bg-white px-4 py-2.5 text-sm font-medium text-navy shadow-soft transition hover:border-accent hover:text-accent">
+            <Icon name={o.icon} class="h-4 w-4 text-accent" />
+            {o.label}
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</Layout>

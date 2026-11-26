@@ -1,0 +1,185 @@
+---
+import Layout from '@layouts/Layout.astro';
+import Hero from '@components/Hero.astro';
+import SectionHeading from '@components/SectionHeading.astro';
+import FeatureCard from '@components/FeatureCard.astro';
+import Icon from '@components/Icon.astro';
+import { missions } from '@data/missions';
+import { services } from '@data/services';
+import { sectors } from '@data/sectors';
+import { cabinets } from '@data/cabinets';
+import { site } from '@data/site';
+
+export function getStaticPaths() {
+  return services.map((service) => {
+    const mission = missions.find((m) => m.slug === service.slug);
+    if (!mission) throw new Error(`Mission introuvable pour le service ${service.slug}`);
+    return { params: { slug: service.slug }, props: { service, mission } };
+  });
+}
+
+const { service, mission } = Astro.props;
+const path = `/nos-missions/${service.slug}/`;
+const url = `${site.url}${path}`;
+const profiles = service.relatedProfiles
+  .map((slug) => sectors.find((s) => s.slug === slug))
+  .filter((s): s is NonNullable<typeof s> => Boolean(s));
+const otherMissions = missions.filter((m) => m.slug !== service.slug);
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    '@id': `${url}#service`,
+    name: mission.title,
+    serviceType: mission.title,
+    description: service.seoDescription,
+    url,
+    provider: { '@id': `${site.url}/#organization` },
+    areaServed: cabinets.map((c) => ({ '@type': 'City', name: c.city })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: service.faq.map((f) => ({
+      '@type': 'Question',
+      name: f.question,
+      acceptedAnswer: { '@type': 'Answer', text: f.answer },
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Accueil', item: `${site.url}/` },
+      { '@type': 'ListItem', position: 2, name: 'Nos missions', item: `${site.url}/nos-missions/` },
+      { '@type': 'ListItem', position: 3, name: mission.title, item: url },
+    ],
+  },
+];
+---
+<Layout title={service.seoTitle} description={service.seoDescription} path={path} jsonLd={jsonLd}>
+  <Hero
+    eyebrow="Nos missions"
+    badge={mission.title}
+    title={service.heroTitle}
+    subtitle={service.heroSubtitle}
+    images={[mission.image]}
+    trustItems={[mission.title, '4 cabinets en Provence', 'Lettre de mission claire']}
+    primaryCTA={{ label: 'Échanger sur votre besoin', href: '/contact/' }}
+    secondaryCTA={{ label: 'Toutes nos missions', href: '/nos-missions/' }}
+  />
+
+  <nav aria-label="Fil d'Ariane" class="border-b border-line bg-white">
+    <ol class="container-px flex flex-wrap items-center gap-2 py-4 text-sm text-slate-500">
+      <li><a href="/" class="hover:text-accent">Accueil</a></li>
+      <li aria-hidden="true">/</li>
+      <li><a href="/nos-missions/" class="hover:text-accent">Nos missions</a></li>
+      <li aria-hidden="true">/</li>
+      <li class="font-medium text-navy" aria-current="page">{mission.title}</li>
+    </ol>
+  </nav>
+
+  <!-- Présentation -->
+  <section class="py-20 md:py-24">
+    <div class="container-px grid gap-12 lg:grid-cols-[1.1fr_0.9fr]">
+      <div>
+        <p class="eyebrow">{mission.highlight}</p>
+        <h2 class="mt-3 font-serif text-3xl font-semibold leading-tight text-navy md:text-[2.3rem]">
+          {mission.title} : ce que nous faisons pour vous
+        </h2>
+        <div class="mt-6 space-y-5 text-[15px] leading-7 text-slate-600">
+          {service.intro.map((p) => <p>{p}</p>)}
+        </div>
+      </div>
+      <aside class="self-start rounded-xl border border-line bg-mist p-6 sm:p-8">
+        <h3 class="text-lg font-semibold text-navy">Pour qui ?</h3>
+        <ul class="mt-4 space-y-3">
+          {service.forWhom.map((w) => (
+            <li class="flex items-start gap-3 text-[15px] leading-6 text-slate-700">
+              <Icon name="check" class="mt-0.5 h-5 w-5 shrink-0 text-accent" />
+              {w}
+            </li>
+          ))}
+        </ul>
+      </aside>
+    </div>
+  </section>
+
+  <!-- Ce que comprend la mission -->
+  <section class="border-y border-line bg-mist py-20 md:py-24">
+    <div class="container-px">
+      <SectionHeading eyebrow="Le contenu de la mission" title="Ce que nous prenons en charge" />
+      <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {service.includes.map((i) => <FeatureCard title={i.title} description={i.description} icon="check" />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- Méthode -->
+  <section class="py-20 md:py-24">
+    <div class="container-px">
+      <SectionHeading eyebrow="Notre méthode" title="Comment ça se passe" />
+      <div class="mt-12 grid gap-6 md:grid-cols-3">
+        {service.steps.map((s, i) => <FeatureCard title={s.title} description={s.description} number={String(i + 1)} />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ + profils -->
+  <section class="border-y border-line bg-mist py-20 md:py-24">
+    <div class="container-px grid gap-12 lg:grid-cols-[1.15fr_0.85fr]">
+      <div>
+        <SectionHeading eyebrow="Questions fréquentes" title={`${mission.title} : vos questions`} />
+        <div class="mt-7 divide-y divide-line rounded-xl border border-line bg-white shadow-card">
+          {service.faq.map((f) => (
+            <details class="group p-5 sm:px-6">
+              <summary class="flex cursor-pointer list-none items-start justify-between gap-4 font-semibold text-navy [&::-webkit-details-marker]:hidden">
+                <h3 class="text-[15px] leading-6">{f.question}</h3>
+                <span class="mt-0.5 text-accent transition-transform group-open:rotate-45" aria-hidden="true">+</span>
+              </summary>
+              <p class="mt-3 text-sm leading-6 text-slate-600">{f.answer}</p>
+            </details>
+          ))}
+        </div>
+      </div>
+      <div>
+        <SectionHeading eyebrow="Par métier" title="Un accompagnement adapté à votre secteur" />
+        <div class="mt-7 flex flex-wrap gap-3">
+          {profiles.map((p) => (
+            <a href={`/profils/${p.slug}/`} class="inline-flex items-center gap-2 rounded-full border border-line bg-white px-4 py-2.5 text-sm font-medium text-navy shadow-soft transition hover:border-accent hover:text-accent">
+              <Icon name={p.icon} class="h-4 w-4 text-accent" />
+              {p.label}
+            </a>
+          ))}
+        </div>
+        <h3 class="mt-10 text-lg font-semibold text-navy">Près de chez vous</h3>
+        <ul class="mt-4 grid gap-3 sm:grid-cols-2">
+          {cabinets.map((c) => (
+            <li>
+              <a href={`/cabinets/${c.slug}/`} class="flex items-center gap-2 rounded-lg border border-line bg-white px-4 py-3 text-sm font-medium text-navy shadow-soft transition hover:border-accent hover:text-accent">
+                <Icon name="map-pin" class="h-4 w-4 shrink-0 text-accent" />
+                Expert-comptable {c.slug === 'les-angles' ? 'aux Angles' : `à ${c.city}`}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Autres missions -->
+  <section class="py-16">
+    <div class="container-px">
+      <SectionHeading eyebrow="Nos autres missions" title="Un accompagnement complet" />
+      <div class="mt-8 flex flex-wrap gap-3">
+        {otherMissions.map((m) => (
+          <a href={`/nos-missions/${m.slug}/`} class="inline-flex items-center gap-2 rounded-full border border-line bg-white px-4 py-2.5 text-sm font-medium text-navy shadow-soft transition hover:border-accent hover:text-accent">
+            <Icon name={m.icon} class="h-4 w-4 text-accent" />
+            {m.title}
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</Layout>

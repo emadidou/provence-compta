@@ -1,0 +1,118 @@
+---
+import Icon from './Icon.astro';
+
+interface CTA {
+  label: string;
+  href: string;
+}
+interface Props {
+  eyebrow?: string;
+  badge?: string;
+  title: string;
+  subtitle?: string;
+  images?: string[];
+  primaryCTA?: CTA;
+  secondaryCTA?: CTA;
+  trustItems?: string[];
+  size?: 'home' | 'page';
+}
+
+const {
+  eyebrow = 'Provence Compta',
+  badge,
+  title,
+  subtitle,
+  images = [],
+  primaryCTA,
+  secondaryCTA,
+  trustItems = [],
+  size = 'page',
+} = Astro.props;
+
+const slides = images.length ? images : ['/images/heroes/hero-default.webp'];
+const heightClass = size === 'home' ? 'min-h-[86vh]' : 'min-h-[62vh]';
+---
+<section class={`relative isolate flex ${heightClass} items-center overflow-hidden bg-navy-800`}>
+  <!-- Background slides -->
+  <div class="absolute inset-0 -z-10" aria-hidden="true" data-hero-slides>
+    {slides.map((src, i) => (
+      <div
+        class="hero-slide absolute inset-0 bg-cover bg-center"
+        data-active={i === 0 ? 'true' : 'false'}
+        style={`background-image:url('${src}');opacity:${i === 0 ? 1 : 0};`}
+      />
+    ))}
+    <div class="absolute inset-0 bg-navy-900/35"></div>
+    <div class="absolute inset-0 bg-gradient-to-r from-navy-900/55 via-navy-900/25 to-navy-900/10"></div>
+  </div>
+
+  <div class="container-px w-full py-16 md:py-20">
+    <div class="max-w-[61rem] animate-fade-up">
+      <p class="flex flex-wrap items-center gap-3">
+        <span class="inline-flex items-center gap-3 rounded-full border border-white/55 bg-white/10 px-5 py-3 text-xs font-bold uppercase tracking-[0.24em] text-white shadow-soft backdrop-blur-md">
+          <span class="h-2.5 w-2.5 rounded-full bg-accent shadow-[0_0_0_8px_rgba(0,152,168,0.12)]"></span>
+          {eyebrow}
+        </span>
+        {badge && (
+          <span class="rounded-full bg-accent/90 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-white">
+            {badge}
+          </span>
+        )}
+      </p>
+
+      <div class="mt-8 max-w-[60rem] rounded-[1.35rem] border border-white/55 bg-navy-900/34 p-7 text-white shadow-[0_24px_80px_-40px_rgba(0,0,0,0.65)] backdrop-blur-md sm:p-10 md:p-14">
+        <h1 class="text-balance font-serif text-3xl font-semibold leading-[1.08] text-white sm:text-5xl md:text-[3.45rem] md:leading-[1.08]">
+          {title}
+        </h1>
+
+        {subtitle && (
+          <p class="mt-7 max-w-[49rem] text-base font-semibold leading-8 text-white sm:text-lg sm:leading-9">
+            {subtitle}
+          </p>
+        )}
+
+        {(primaryCTA || secondaryCTA) && (
+          <div class="mt-9 flex flex-wrap gap-4">
+            {primaryCTA && (
+              <a href={primaryCTA.href} class="btn-primary">
+                {primaryCTA.label}
+                <Icon name="arrow-right" class="h-4 w-4" />
+              </a>
+            )}
+            {secondaryCTA && (
+              <a href={secondaryCTA.href} class="btn-ghost-light">{secondaryCTA.label}</a>
+            )}
+          </div>
+        )}
+
+        {trustItems.length > 0 && (
+          <ul class="mt-10 flex flex-wrap gap-3">
+            {trustItems.map((item) => (
+              <li class="flex min-w-[12rem] items-center justify-center gap-2 rounded-full border border-white/65 bg-white/5 px-5 py-2.5 text-sm font-semibold text-white backdrop-blur-sm">
+                <Icon name="check" class="h-4 w-4 text-accent-300" />
+                {item}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Lightweight, progressive crossfade (no-op for a single slide / reduced motion)
+  const groups = document.querySelectorAll('[data-hero-slides]');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  groups.forEach((group) => {
+    const slides = Array.from(group.querySelectorAll<HTMLElement>('.hero-slide'));
+    if (slides.length < 2 || reduce) return;
+    slides.forEach((s) => (s.style.transition = 'opacity 1.4s ease-in-out'));
+    let i = 0;
+    setInterval(() => {
+      slides[i].style.opacity = '0';
+      i = (i + 1) % slides.length;
+      slides[i].style.opacity = '1';
+    }, 6000);
+  });
+</script>

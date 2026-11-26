@@ -1,0 +1,92 @@
+---
+import Layout from '@layouts/Layout.astro';
+import { site } from '@data/site';
+import { cabinets } from '@data/cabinets';
+
+const sections: { id?: string; title: string; body: string[] }[] = [
+  {
+    title: 'Éditeur du site',
+    body: [
+      `Le présent site est édité par le Groupe Provence Compta, groupement de cabinets d’expertise comptable indépendants inscrits à l’Ordre des Experts-Comptables.`,
+      `Représentant : Moslim Naji, expert-comptable et commissaire aux comptes.`,
+      `Adresse du siège : Résidence Le Monte Carlo, 355 boulevard Ledru Rollin, 13300 Salon-de-Provence.`,
+      `Téléphone : ${site.phone} — Email : ${site.email}`,
+    ],
+  },
+  {
+    title: 'Inscription à l’Ordre',
+    body: [
+      `Les cabinets du Groupe Provence Compta sont inscrits au Tableau de l’Ordre des Experts-Comptables de leur région respective et soumis aux règles de la profession (code de déontologie des professionnels de l’expertise comptable).`,
+    ],
+  },
+  {
+    title: 'Hébergement',
+    body: [
+      `L’hébergeur du site est à compléter par l’éditeur (nom de l’hébergeur, adresse et téléphone).`,
+    ],
+  },
+  {
+    title: 'Propriété intellectuelle',
+    body: [
+      `L’ensemble des contenus présents sur ce site (textes, images, logo, charte graphique) est protégé par le droit de la propriété intellectuelle. Toute reproduction ou représentation, totale ou partielle, sans autorisation préalable est interdite.`,
+    ],
+  },
+  {
+    title: 'Données personnelles',
+    body: [
+      `Les informations transmises via le formulaire de contact sont utilisées uniquement pour répondre à votre demande et ne sont pas cédées à des tiers. Conformément au RGPD, vous disposez d’un droit d’accès, de rectification et de suppression des données vous concernant, en écrivant à ${site.email}.`,
+    ],
+  },
+  {
+    id: 'cookies',
+    title: 'Cookies et mesure d’audience',
+    body: [
+      `Ce site utilise Google Analytics 4 (Google Ireland Ltd) uniquement si vous l’acceptez via le bandeau affiché lors de votre première visite. Sans accord de votre part, aucun cookie de mesure n’est déposé.`,
+      `Les informations collectées sont uniquement statistiques : pages consultées, durée de visite, type d’appareil, ville approximative, et le fait d’avoir cliqué sur un numéro de téléphone, demandé un itinéraire ou envoyé le formulaire de contact. Le contenu de vos messages, votre nom et votre adresse e-mail ne sont jamais transmis à Google. Les fonctions publicitaires de Google Analytics sont désactivées.`,
+      `Ces données servent à savoir quelles pages sont utiles et à améliorer le site. Elles sont conservées 14 mois au maximum. Votre choix est mémorisé pendant 13 mois ; vous pouvez le modifier à tout moment avec le lien « Gérer les cookies » en bas de chaque page.`,
+      `Google peut traiter ces données en dehors de l’Union européenne, dans le cadre du Data Privacy Framework UE–États-Unis.`,
+    ],
+  },
+];
+---
+<Layout
+  title="Mentions légales"
+  description="Mentions légales du site Provence Compta."
+  path="/mentions-legales/"
+  noindex={true}
+  showContactBanner={false}
+>
+  <section class="bg-navy py-16 md:py-20">
+    <div class="container-px">
+      <p class="eyebrow text-accent-300">Informations légales</p>
+      <h1 class="mt-3 font-serif text-3xl font-semibold text-white md:text-4xl">Mentions légales</h1>
+    </div>
+  </section>
+
+  <section class="py-16 md:py-20">
+    <div class="container-px max-w-3xl">
+      <div class="space-y-10">
+        {sections.map((s) => (
+          <div id={s.id} class="scroll-mt-28">
+            <h2 class="text-xl font-semibold text-navy">{s.title}</h2>
+            <div class="mt-3 space-y-3">
+              {s.body.map((p) => <p class="text-[15px] leading-7 text-slate-600">{p}</p>)}
+            </div>
+          </div>
+        ))}
+
+        <div>
+          <h2 class="text-xl font-semibold text-navy">Cabinets du groupe</h2>
+          <ul class="mt-3 space-y-2 text-[15px] leading-7 text-slate-600">
+            {cabinets.map((c) => (
+              <li>
+                <span class="font-medium text-navy">Provence Compta {c.dept} — {c.city}</span> :
+                {` ${c.address}, ${c.postalCode} ${c.city}`} — {c.phone}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>

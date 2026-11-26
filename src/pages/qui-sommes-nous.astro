@@ -1,0 +1,137 @@
+---
+import { Image } from 'astro:assets';
+import Layout from '@layouts/Layout.astro';
+import Hero from '@components/Hero.astro';
+import SectionHeading from '@components/SectionHeading.astro';
+import FeatureCard from '@components/FeatureCard.astro';
+
+const pillars = [
+  {
+    title: 'Qui sommes-nous ?',
+    description:
+      "Le Groupe Provence Compta rassemble plusieurs cabinets d'expertise comptable indépendants, profondément ancrés dans leur territoire. Notre ambition est d'offrir aux dirigeants la proximité d'un cabinet local et la solidité d'une organisation exigeante.",
+  },
+  {
+    title: 'Notre mission',
+    description:
+      "Transformer les obligations comptables, fiscales et sociales en outils de pilotage utiles. Nous voulons donner aux entrepreneurs une lecture claire de leur situation afin qu'ils prennent leurs décisions avec plus de confiance.",
+  },
+];
+
+const stats = [
+  { value: '4', label: 'cabinets de proximité' },
+  { value: '2020', label: 'début du développement du groupe' },
+  { value: '1', label: 'interlocuteur dédié par dossier' },
+  { value: '360°', label: "vision globale de l'accompagnement" },
+];
+
+const values = [
+  { title: 'Proximité', description: 'Un accompagnement concret, accessible et régulier pour rester au plus près des réalités de votre activité.' },
+  { title: 'Rigueur', description: 'Une exigence technique constante pour sécuriser vos obligations comptables, fiscales et sociales.' },
+  { title: 'Clarté', description: 'Des explications simples, des recommandations utiles et une lecture intelligible de vos chiffres.' },
+  { title: 'Confiance', description: "Une relation durable fondée sur l'écoute, la disponibilité et une vraie implication à vos côtés." },
+  { title: 'Accompagnement', description: 'Une présence à chaque étape de la vie de votre entreprise, de la création au pilotage quotidien.' },
+  { title: 'Expertise', description: 'Une vision à la fois opérationnelle et stratégique pour vous aider à décider avec plus de sérénité.' },
+];
+
+const whyUs = [
+  { title: 'Une relation humaine et directe', description: "Chaque client bénéficie d'un interlocuteur identifié, d'échanges réguliers et d'un suivi adapté à ses enjeux." },
+  { title: 'Une expertise technique engagée', description: 'Nous sécurisons vos obligations tout en vous aidant à gagner en lisibilité, en anticipation et en performance.' },
+  { title: 'Une vision de long terme', description: "Notre accompagnement est pensé pour durer : croissance, structuration, transmission ou évolution de l'activité." },
+  { title: 'Une force collective', description: 'Quatre implantations, une même exigence de qualité et une même conviction : le conseil doit être clair, fiable et utile.' },
+];
+---
+<Layout
+  title="Qui sommes-nous : vos experts-comptables en Provence"
+  description="Le Groupe Provence Compta : une expertise comptable de proximité portée par quatre cabinets locaux et une même exigence de qualité."
+  path="/qui-sommes-nous/"
+>
+  <Hero
+    eyebrow="Groupe Provence Compta"
+    badge="Accompagnement durable"
+    title="Une expertise comptable de proximité, portée par une même exigence de qualité."
+    subtitle="Le Groupe Provence Compta accompagne entrepreneurs, dirigeants, professions libérales et structures locales avec une approche claire, fiable et humaine. Une expertise engagée pour mieux comprendre, mieux décider et mieux avancer."
+    images={['/images/heroes/about-1.webp', '/images/heroes/about-2.webp']}
+    trustItems={['Proximité', 'Rigueur', 'Vision long terme']}
+    primaryCTA={{ label: 'Prendre contact', href: '/contact/' }}
+    secondaryCTA={{ label: 'Voir nos cabinets', href: '/cabinets/salon-de-provence/' }}
+  />
+
+  <section class="py-20 md:py-24">
+    <div class="container-px grid gap-12 lg:grid-cols-[1.05fr_0.95fr]">
+      <div>
+        <SectionHeading
+          eyebrow="À propos"
+          title="Une organisation à taille humaine pour accompagner les dirigeants avec clarté et exigence"
+          intro="Chez Provence Compta, la comptabilité ne se limite pas à une obligation : elle doit devenir un levier de sécurité, de pilotage et de décision. Notre approche est fondée sur l'écoute, la pédagogie et l'engagement."
+        />
+        <div class="mt-8 grid gap-5 sm:grid-cols-2">
+          {pillars.map((p) => <FeatureCard title={p.title} description={p.description} />)}
+        </div>
+      </div>
+      <div class="flex flex-col gap-5">
+        <div class="overflow-hidden rounded-xl border border-line bg-white p-2.5 shadow-card">
+          <Image
+            src="/images/about/equipe.webp"
+            alt="L'équipe Provence Compta"
+            width={840}
+            height={560}
+            loading="lazy"
+            decoding="async"
+            class="h-[360px] w-full rounded-lg object-cover"
+          />
+        </div>
+        <div class="rounded-xl border border-line bg-mist p-6">
+          <p class="eyebrow">Notre promesse</p>
+          <p class="mt-3 text-lg leading-8 text-navy">
+            Offrir la proximité d'un cabinet local avec la qualité de conseil, la rigueur et la
+            constance attendues d'un partenaire durable.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-y border-line bg-mist py-20 md:py-24">
+    <div class="container-px">
+      <SectionHeading
+        eyebrow="Notre vision"
+        title="Faire de l'expertise comptable un repère de confiance pour les dirigeants"
+        intro="Nous voulons simplifier la lecture de votre activité, renforcer votre sécurité et vous donner une vision plus claire de vos marges de décision."
+      />
+      <div class="mt-12 grid grid-cols-2 gap-6 lg:grid-cols-4">
+        {stats.map((s) => (
+          <div class="rounded-xl border border-line bg-white p-6 text-center shadow-card">
+            <p class="font-serif text-4xl font-semibold text-navy">{s.value}</p>
+            <p class="mx-auto mt-2 max-w-[16ch] text-sm leading-6 text-slate-600">{s.label}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="py-20 md:py-24">
+    <div class="container-px">
+      <SectionHeading
+        eyebrow="Nos valeurs"
+        title="Des principes clairs pour construire une relation durable et utile"
+      />
+      <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {values.map((v) => <FeatureCard title={v.title} description={v.description} icon="check" />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-line bg-mist py-20 md:py-24">
+    <div class="container-px grid gap-12 lg:grid-cols-2">
+      <SectionHeading
+        eyebrow="Pourquoi nous choisir"
+        title="Une approche humaine, une expertise technique, un vrai sens du partenariat"
+        intro="Nous croyons à une expertise comptable qui rassure, éclaire et accompagne durablement, pour vous permettre de vous concentrer sur le développement de votre activité."
+      />
+      <div class="grid gap-5">
+        {whyUs.map((w) => <FeatureCard title={w.title} description={w.description} />)}
+      </div>
+    </div>
+  </section>
+</Layout>
